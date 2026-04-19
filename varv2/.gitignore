@@ -1,0 +1,20 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.*
+
+# Känslig data
+terraform.tfvars
+*.tfvars
+
+# Editor
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# SSH-nycklar
+samsam-key
+samsam.pub

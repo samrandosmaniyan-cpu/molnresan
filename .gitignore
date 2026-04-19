@@ -1,0 +1,25 @@
+# Terraform
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.backup
+**/*.tfstate.*
+**/.terraform.lock.hcl
+
+# Känsliga variabelfiler
+**/terraform.tfvars
+**/*.auto.tfvars
+
+# SSH-nycklar - alla privata, behåll bara .pub
+**/*-key
+!**/*-key.pub
+
+# Editor
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Övrigt
+*.log
