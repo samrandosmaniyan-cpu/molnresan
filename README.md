@@ -1,4 +1,4 @@
-# Min molnresa
+# molnresa
 
 ## Struktur
 
