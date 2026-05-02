@@ -14,7 +14,7 @@ def home():
     <html>
     <head><title>Labb 5 - Dockeriserad app</title></head>
     <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto;">
-        <h1>HejHejHej!</h1>
+        <h1>dockerdocker!</h1>
         <p><strong>Hostname:</strong> {hostname}</p>
         <p><strong>Version:</strong> {version}</p>
         <p><strong>Miljö:</strong> {environment}</p>
