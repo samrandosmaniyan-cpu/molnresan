@@ -26,3 +26,4 @@ Jag byggde ett komplett eget nätverk (VPC) i AWS med Terraform, med publika och
 |------|-----------|--------------|
 | labb 1-3 | Default-VPC, allt publikt | Bara security groups (1 lager) |
 | labb 4 | Egen VPC, publika + privata subnät | Security groups + nätverksisolering (2 lager) |
+
