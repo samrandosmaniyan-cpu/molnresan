@@ -116,4 +116,4 @@ I slutet av varje avsnitt ska du skriva en sammanfattning. Regler:
 
 ## Aktuellt läge
 
-Jag är mitt i **Labb 5 (Docker)**. Avsnitt 0 (installera Docker), Avsnitt 1 (skriva Flask-app + Dockerfile) och Avsnitt 2 (bygga och testa containern lokalt) är klara. Nästa steg är Avsnitt 3 (pusha image till Amazon ECR).
+Jag är mitt i **Labb 5 (Docker)**. Avsnitt 0 (installera Docker), Avsnitt 1 (skriva Flask-app + Dockerfile), Avsnitt 2 (bygga och testa containern lokalt) och Avsnitt 3 (pusha image till Amazon ECR)är klara. Nästa steg är uppdatera Terraform så EC2 hämtar och kör containern (Avsnitt 4)
