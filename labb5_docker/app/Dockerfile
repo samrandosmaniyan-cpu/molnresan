@@ -1,5 +1,5 @@
 # Steg 1: Välj bas-image
-FROM python:3.12-slim
+FROM --platform=linux/amd64 python:3.12-slim
 
 # Steg 2: Sätt arbetskataloginuti containern
 WORKDIR /app
