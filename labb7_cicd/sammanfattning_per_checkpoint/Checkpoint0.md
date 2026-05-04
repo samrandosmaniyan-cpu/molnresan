@@ -13,14 +13,14 @@ Jag lärde mig grundkoncepten för GitHub Actions innan jag började skriva någ
 **Hur GitHub Actions fungerar bakom kulisserna:**
 
 1. Jag pushar kod till GitHub
-2. GitHub startar en Ubuntu-maskin
+2. GitHub startar en fräsch Ubuntu-maskin
 3. Maskinen kör mina steps i ordning
 4. När allt är klart stängs maskinen ner
 5. Loggar sparas och visas i GitHub-gränssnittet
 
 **Hur AWS-credentials hanteras:**
 
-Istället för `~/.aws/credentials` (som inte finns på GitHub:s runner) använder jag **GitHub Secrets**, krypterade variabler som lagras i repo-inställningarna och injiceras som miljövariabler vid körning. GitHub maskerar dem i alla loggar.
+Istället för `~/.aws/credentials` (som inte finns på GitHub:s runner) använder jag **GitHub Secrets** – krypterade variabler som lagras i repo-inställningarna och injiceras som miljövariabler vid körning. GitHub maskerar dem i alla loggar.
 
 **YAML-syntax:**
 

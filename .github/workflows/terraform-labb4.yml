@@ -1,0 +1,104 @@
+name: Terraform Labb 4 - Plan
+
+# ============================================
+# NÄR SKA WORKFLOW:EN KÖRAS?
+# ============================================
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'labb4_egen_vpc/**'
+      - '.github/workflows/terraform-labb4.yml'
+
+  workflow_dispatch:
+
+# ============================================
+# MILJÖVARIABLER FÖR HELA WORKFLOW:EN
+# ============================================
+env:
+  AWS_REGION: eu-north-1
+  TF_WORKING_DIR: labb4_egen_vpc/environments/dev
+
+# ============================================
+# JOBS
+# ============================================
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+      # -----------------------------------------
+      # Steg 1: Checka ut koden från repot
+      # -----------------------------------------
+      - name: Checka ut kod
+        uses: actions/checkout@v4
+
+      # -----------------------------------------
+      # Steg 2: Installera Terraform
+      # -----------------------------------------
+      - name: Installera Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.8"
+
+      # -----------------------------------------
+      # Steg 3: Konfigurera AWS-credentials
+      # -----------------------------------------
+      - name: Konfigurera AWS-credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # -----------------------------------------
+      # Steg 4: Generera SSH-nyckel (för Terraform)
+      # -----------------------------------------
+      - name: Generera temporär SSH-nyckel
+        run: |
+          mkdir -p ../../keys
+          ssh-keygen -t rsa -b 4096 -f ../../keys/dev-key -N ""
+
+      # -----------------------------------------
+      # Steg 5: Skapa terraform.tfvars
+      # -----------------------------------------
+      - name: Skapa terraform.tfvars
+        run: |
+          echo 'db_password = "${{ secrets.DB_PASSWORD }}"' > terraform.tfvars
+
+      # -----------------------------------------
+      # Steg 6: Terraform Init
+      # -----------------------------------------
+      - name: Terraform Init
+        run: terraform init
+
+      # -----------------------------------------
+      # Steg 7: Terraform Format Check
+      # -----------------------------------------
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive ../../modules/
+
+      # -----------------------------------------
+      # Steg 8: Terraform Validate
+      # -----------------------------------------
+      - name: Terraform Validate
+        run: terraform validate
+
+      # -----------------------------------------
+      # Steg 9: Terraform Plan
+      # -----------------------------------------
+      - name: Terraform Plan
+        run: terraform plan -no-color
+
+      # -----------------------------------------
+      # Steg 10: Visa sammanfattning
+      # -----------------------------------------
+      - name: Plan-sammanfattning
+        if: always()
+        run: echo "✅ Terraform plan kördes. Se loggarna ovan för detaljer."
