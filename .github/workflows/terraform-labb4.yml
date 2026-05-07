@@ -63,7 +63,7 @@ jobs:
       - name: Generera temporär SSH-nyckel
         run: |
           mkdir -p ../../keys
-          ssh-keygen -t rsa -b 4096 -f ../../keys/dev-key -N ""
+          ssh-keygen -t rsa -b 4096 -f ../labb4_egen_vpc/keys/dev-key -N ""
 
       # -----------------------------------------
       # Steg 5: Skapa terraform.tfvars
