@@ -101,4 +101,4 @@ jobs:
       # -----------------------------------------
       - name: Plan-sammanfattning
         if: always()
-        run: echo "✅ Terraform plan kördes. Se loggarna ovan för detaljer."
+        run: echo " Terraform plan kördes. Se loggarna ovan för detaljer."
