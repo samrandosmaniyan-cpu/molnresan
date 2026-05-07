@@ -1,9 +1,18 @@
-name: Terraform Labb 4 - Plan
+name: Terraform Labb 4 - Plan & Apply
 
 # ============================================
 # NÄR SKA WORKFLOW:EN KÖRAS?
 # ============================================
 on:
+  # Vid Pull Request mot main (kör plan)
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'Labb4_egen_vpc/**'
+      - '.github/workflows/terraform-labb4.yml'
+
+  # Vid push till main (kör apply efter merge)
   push:
     branches:
       - main
@@ -11,10 +20,11 @@ on:
       - 'Labb4_egen_vpc/**'
       - '.github/workflows/terraform-labb4.yml'
 
+  # Manuell trigger
   workflow_dispatch:
 
 # ============================================
-# MILJÖVARIABLER FÖR HELA WORKFLOW:EN
+# MILJÖVARIABLER
 # ============================================
 env:
   AWS_REGION: eu-north-1
@@ -24,6 +34,9 @@ env:
 # JOBS
 # ============================================
 jobs:
+  # ------------------------------------------
+  # JOB 1: PLAN (körs alltid)
+  # ------------------------------------------
   terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
@@ -33,23 +46,14 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
 
     steps:
-      # -----------------------------------------
-      # Steg 1: Checka ut koden från repot
-      # -----------------------------------------
       - name: Checka ut kod
         uses: actions/checkout@v4
 
-      # -----------------------------------------
-      # Steg 2: Installera Terraform
-      # -----------------------------------------
       - name: Installera Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.14.8"
 
-      # -----------------------------------------
-      # Steg 3: Konfigurera AWS-credentials
-      # -----------------------------------------
       - name: Konfigurera AWS-credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -57,48 +61,80 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # -----------------------------------------
-      # Steg 4: Generera SSH-nyckel (för Terraform)
-      # -----------------------------------------
       - name: Generera temporär SSH-nyckel
         run: |
           mkdir -p ../../keys
           ssh-keygen -t rsa -b 4096 -f ../../keys/dev-key -N ""
 
-      # -----------------------------------------
-      # Steg 5: Skapa terraform.tfvars
-      # -----------------------------------------
       - name: Skapa terraform.tfvars
         run: |
           echo 'db_password = "${{ secrets.DB_PASSWORD }}"' > terraform.tfvars
 
-      # -----------------------------------------
-      # Steg 6: Terraform Init
-      # -----------------------------------------
       - name: Terraform Init
         run: terraform init
 
-      # -----------------------------------------
-      # Steg 7: Terraform Format Check
-      # -----------------------------------------
       - name: Terraform Format Check
         run: terraform fmt -check -recursive ../../modules/
 
-      # -----------------------------------------
-      # Steg 8: Terraform Validate
-      # -----------------------------------------
       - name: Terraform Validate
         run: terraform validate
 
-      # -----------------------------------------
-      # Steg 9: Terraform Plan
-      # -----------------------------------------
       - name: Terraform Plan
-        run: terraform plan -no-color
+        run: terraform plan -no-color -out=tfplan
 
-      # -----------------------------------------
-      # Steg 10: Visa sammanfattning
-      # -----------------------------------------
       - name: Plan-sammanfattning
         if: always()
-        run: echo " Terraform plan kördes. Se loggarna ovan för detaljer."
+        run: |
+          if [ -f tfplan ]; then
+            echo "Terraform plan skapades. Se loggarna ovan för detaljer."
+          else
+            echo "Terraform plan misslyckades."
+          fi
+
+  # ------------------------------------------
+  # JOB 2: APPLY (körs BARA vid push till main)
+  # ------------------------------------------
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+      - name: Checka ut kod
+        uses: actions/checkout@v4
+
+      - name: Installera Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.8"
+
+      - name: Konfigurera AWS-credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Generera temporär SSH-nyckel
+        run: |
+          mkdir -p ../../keys
+          ssh-keygen -t rsa -b 4096 -f ../../keys/dev-key -N ""
+
+      - name: Skapa terraform.tfvars
+        run: |
+          echo 'db_password = "${{ secrets.DB_PASSWORD }}"' > terraform.tfvars
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -no-color
+
+      - name: Apply-sammanfattning
+        if: always()
+        run: echo "Terraform apply kördes. Infrastrukturen har uppdaterats."
