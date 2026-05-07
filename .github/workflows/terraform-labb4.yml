@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - 'labb4_egen_vpc/**'
+      - 'Labb4_egen_vpc/**'
       - '.github/workflows/terraform-labb4.yml'
 
   workflow_dispatch:
@@ -18,7 +18,7 @@ on:
 # ============================================
 env:
   AWS_REGION: eu-north-1
-  TF_WORKING_DIR: labb4_egen_vpc/environments/dev
+  TF_WORKING_DIR: Labb4_egen_vpc/environments/dev
 
 # ============================================
 # JOBS
