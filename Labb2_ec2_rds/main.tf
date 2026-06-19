@@ -6,6 +6,7 @@ locals {
     ManagedBy   = "terraform"
   }
 }
+#test
 
 # Security group för webbservern
 resource "aws_security_group" "web_sg" {
